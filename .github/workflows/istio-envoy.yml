@@ -1,0 +1,31 @@
+name: istio-envoy
+"on":
+  push:
+    paths:
+    - .github/workflows/istio-envoy.yml
+    - .ci/docker/istio-envoy.Dockerfile
+    - .ci/istio-envoy.sh
+
+jobs:
+  amd64:
+    runs-on:
+    - ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/cache@v1
+      with:
+        path: "/tmp/bazel"
+        key: bazel
+
+    - name: Login docker.io
+      uses: docker/login-action@v1
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - run: .ci/istio-envoy.sh
+      env:
+        TARGETARCH: amd64
+        REPO: ${{ github.repository }}

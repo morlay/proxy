@@ -1,0 +1,26 @@
+name: build-env
+"on":
+  push:
+    paths:
+    - .github/workflows/build-env.yml
+    - .ci/docker/build-env.Dockerfile
+    - .ci/build-env.sh
+
+jobs:
+  amd64:
+    runs-on:
+    - ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Login docker.io
+      uses: docker/login-action@v1
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - run: .ci/build-env.sh
+      env:
+        TARGETARCH: amd64
+        REPO: ${{ github.repository }}
